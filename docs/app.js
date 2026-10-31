@@ -23,6 +23,7 @@
     detail: document.getElementById("detail"),
     summary: document.getElementById("summary"),
     toTop: document.getElementById("to-top"),
+    list: document.querySelector(".list-pane"),
   };
 
   const countries = unique(
@@ -89,7 +90,7 @@
       if (!selectedId) {
         els.detail.innerHTML = `<p class="empty-detail">Select a record to read notes and sources.</p>`;
       }
-      els.results.scrollTop = 0;
+      els.list.scrollTop = 0;
     }
     updateToTop();
   }
@@ -162,12 +163,11 @@
       item.classList.toggle("active", item.dataset.id === id);
     }
     const active = els.results.querySelector("li.active");
-    if (active) active.scrollIntoView({ block: "nearest" });
-    els.detail.scrollTop = 0;
+    if (active) active.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
 
   function updateToTop() {
-    els.toTop.hidden = els.results.scrollTop < 160;
+    els.toTop.hidden = els.list.scrollTop < 160;
   }
 
   function field(label, value) {
@@ -189,9 +189,9 @@
     el.addEventListener("change", apply);
   }
 
-  els.results.addEventListener("scroll", updateToTop);
+  els.list.addEventListener("scroll", updateToTop);
   els.toTop.addEventListener("click", () => {
-    els.results.scrollTo({ top: 0, behavior: "smooth" });
+    els.list.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   window.addEventListener("hashchange", () => {
