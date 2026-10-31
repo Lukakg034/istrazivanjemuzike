@@ -24,6 +24,7 @@
     summary: document.getElementById("summary"),
     toTop: document.getElementById("to-top"),
     list: document.querySelector(".list-pane"),
+    play: document.getElementById("play-yt"),
   };
 
   const countries = unique(
@@ -48,10 +49,12 @@
     `${records.length} records · ${countriesCount} countries and areas · ${verified} verified · generated ${data.generated}`;
 
   let selectedId = new URLSearchParams(location.hash.replace(/^#/, "")).get("id");
+  let visibleRows = [];
+  const YOUTUBE_PLAYLIST_LIMIT = 50;
 
-  function apply() {
+  function filteredRows() {
     const query = els.q.value.trim().toLowerCase();
-    let rows = records.filter((row) => {
+    return records.filter((row) => {
       if (els.file.value && row.source_file !== els.file.value) return false;
       if (els.tradition.value && row.musical_tradition !== els.tradition.value) return false;
       if (els.decade.value && row.decade !== els.decade.value) return false;
@@ -61,6 +64,10 @@
       if (!query) return true;
       return searchBlob(row).includes(query);
     });
+  }
+
+  function apply() {
+    let rows = filteredRows();
 
     const sort = els.sort.value;
     rows.sort((a, b) => {
@@ -70,7 +77,12 @@
       return cmpTitle(a, b);
     });
 
-    els.count.textContent = `${rows.length} shown`;
+    visibleRows = rows;
+    const youtubeCount = youtubeIdsFor(rows).length;
+    updatePlayButton(rows);
+    els.count.textContent = youtubeCount
+      ? `${rows.length} shown · ${youtubeCount} with YouTube`
+      : `${rows.length} shown`;
     els.results.innerHTML = "";
     if (!rows.length) {
       els.results.innerHTML = `<li class="empty-list">No records match these filters.</li>`;
@@ -193,6 +205,7 @@
   els.toTop.addEventListener("click", () => {
     els.list.scrollTo({ top: 0, behavior: "smooth" });
   });
+  els.play.addEventListener("click", playYouTubeList);
 
   window.addEventListener("hashchange", () => {
     selectedId = new URLSearchParams(location.hash.replace(/^#/, "")).get("id");
@@ -236,6 +249,61 @@
 
   function cmpTitle(a, b) {
     return (a.title_original || "").localeCompare(b.title_original || "", undefined, { sensitivity: "base" });
+  }
+
+  function youtubeId(url) {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.replace(/^www\./, "").replace(/^m\./, "");
+      if (host === "youtu.be") {
+        return (parsed.pathname.split("/").filter(Boolean)[0] || "").split("?")[0];
+      }
+      if (host === "youtube.com" || host === "music.youtube.com") {
+        const fromQuery = parsed.searchParams.get("v");
+        if (fromQuery) return fromQuery;
+        const parts = parsed.pathname.split("/").filter(Boolean);
+        const marker = parts.findIndex((part) => part === "embed" || part === "shorts");
+        if (marker >= 0) return parts[marker + 1] || "";
+      }
+    } catch {
+      return "";
+    }
+    return "";
+  }
+
+  function youtubeIdsFor(rows) {
+    const ids = [];
+    const seen = new Set();
+    for (const row of rows) {
+      const id = youtubeId(row.audio_url);
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      ids.push(id);
+    }
+    return ids;
+  }
+
+  function updatePlayButton(rows) {
+    const ids = youtubeIdsFor(rows);
+    const scope = els.genre.value || "filtered list";
+    els.play.disabled = ids.length === 0;
+    if (!ids.length) {
+      els.play.textContent = "No YouTube links in this view";
+      return;
+    }
+    if (ids.length > YOUTUBE_PLAYLIST_LIMIT) {
+      els.play.textContent = `Play first ${YOUTUBE_PLAYLIST_LIMIT} of ${ids.length} (${scope})`;
+    } else {
+      els.play.textContent = `Play ${ids.length} on YouTube (${scope})`;
+    }
+  }
+
+  function playYouTubeList() {
+    const ids = youtubeIdsFor(visibleRows).slice(0, YOUTUBE_PLAYLIST_LIMIT);
+    if (!ids.length) return;
+    const url = "https://www.youtube.com/watch_videos?video_ids=" + ids.join(",");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   function listenLabel(url) {

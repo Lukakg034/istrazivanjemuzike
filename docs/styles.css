@@ -123,6 +123,26 @@ input, select {
 
 .reset:hover { border-color: var(--ink); }
 
+.play-yt {
+  align-self: end;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fffaf1;
+  cursor: pointer;
+}
+
+.play-yt:hover { filter: brightness(1.08); }
+
+.play-yt:disabled {
+  border-color: var(--line);
+  background: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+  filter: none;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
