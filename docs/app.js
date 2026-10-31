@@ -22,6 +22,7 @@
     count: document.getElementById("count"),
     detail: document.getElementById("detail"),
     summary: document.getElementById("summary"),
+    toTop: document.getElementById("to-top"),
   };
 
   const countries = unique(
@@ -84,9 +85,13 @@
     if (stillVisible) {
       showDetail(stillVisible);
       highlight(selectedId);
-    } else if (!selectedId) {
-      els.detail.innerHTML = `<p class="empty-detail">Select a record to read notes and sources.</p>`;
+    } else {
+      if (!selectedId) {
+        els.detail.innerHTML = `<p class="empty-detail">Select a record to read notes and sources.</p>`;
+      }
+      els.results.scrollTop = 0;
     }
+    updateToTop();
   }
 
   function renderRow(row) {
@@ -156,6 +161,13 @@
     for (const item of els.results.querySelectorAll("li[data-id]")) {
       item.classList.toggle("active", item.dataset.id === id);
     }
+    const active = els.results.querySelector("li.active");
+    if (active) active.scrollIntoView({ block: "nearest" });
+    els.detail.scrollTop = 0;
+  }
+
+  function updateToTop() {
+    els.toTop.hidden = els.results.scrollTop < 160;
   }
 
   function field(label, value) {
@@ -176,6 +188,11 @@
     el.addEventListener("input", apply);
     el.addEventListener("change", apply);
   }
+
+  els.results.addEventListener("scroll", updateToTop);
+  els.toTop.addEventListener("click", () => {
+    els.results.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   window.addEventListener("hashchange", () => {
     selectedId = new URLSearchParams(location.hash.replace(/^#/, "")).get("id");
