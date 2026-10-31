@@ -120,7 +120,7 @@
       .map((url, index) => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">Source ${index + 2}</a>`)
       .join("");
     const audio = row.audio_url
-      ? `<a href="${escapeAttr(row.audio_url)}" target="_blank" rel="noopener noreferrer">Audio</a>`
+      ? `<a href="${escapeAttr(row.audio_url)}" target="_blank" rel="noopener noreferrer">${listenLabel(row.audio_url)}</a>`
       : "";
     const source = row.source_url
       ? `<a href="${escapeAttr(row.source_url)}" target="_blank" rel="noopener noreferrer">Primary source</a>`
@@ -219,6 +219,14 @@
 
   function cmpTitle(a, b) {
     return (a.title_original || "").localeCompare(b.title_original || "", undefined, { sensitivity: "base" });
+  }
+
+  function listenLabel(url) {
+    const host = String(url).toLowerCase();
+    if (host.includes("youtube.com") || host.includes("youtu.be")) return "YouTube";
+    if (host.includes("spotify.com")) return "Spotify";
+    if (host.includes("soundcloud.com")) return "SoundCloud";
+    return "Listen";
   }
 
   function badgeClass(status) {
