@@ -631,6 +631,9 @@ Recommended fields:
 | year | Exact year, when verified |
 | original_format | Solo, vocal, ensemble, orchestral, electronic, etc. |
 | original_instruments | Known original instrumentation |
+| musical_key | Cited key, mode, maqam, raga or scale; empty if not sourced |
+| time_signature | Cited metre; empty if unknown |
+| chord_progression | Short typical loop for a named version; empty rather than guess |
 | piano_version_exists | Yes / No / Unknown |
 | piano_arrangement_potential | Not assessed |
 | source_url | Primary or most reliable source |

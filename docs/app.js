@@ -161,6 +161,9 @@
         ${field("Date", [row.year, row.decade].filter(Boolean).join(" · "))}
         ${field("Format", row.original_format)}
         ${field("Instruments", row.original_instruments)}
+        ${field("Key / scale", row.musical_key || "Not sourced")}
+        ${field("Time signature", row.time_signature || "Not sourced")}
+        ${field("Chord progression", row.chord_progression || "Not sourced")}
         ${field("Piano version", row.piano_version_exists)}
         ${field("Also associated", row.secondary_associations)}
         ${field("Batch", row.research_batch)}
@@ -243,7 +246,8 @@
   function searchBlob(row) {
     return [
       row.id, row.title_original, row.title_english, row.artist, row.composer,
-      row.songwriter, row.country, row.genre, row.subgenre, row.research_notes,
+      row.songwriter, row.country, row.genre, row.subgenre,
+      row.musical_key, row.time_signature, row.chord_progression, row.research_notes,
     ].join(" ").toLowerCase();
   }
 

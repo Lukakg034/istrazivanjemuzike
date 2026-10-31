@@ -110,6 +110,9 @@ All CSVs share exactly these columns, in this order. Multi-value fields use ` | 
 | `year` | Exact four-digit year, **only when verified**. Say in the notes whether it is a composition, publication, premiere or release year. |
 | `original_format` | Solo, vocal with band, ensemble, orchestral, electronic, choir, etc. |
 | `original_instruments` | Known original instrumentation, multi-value. Leave empty rather than guess. |
+| `musical_key` | Cited key, mode, maqam, raga or scale of a named version, e.g. `A minor`, `E hijaz`. Empty if no source states it. Do not guess from the recording. |
+| `time_signature` | Cited metre, e.g. `4/4`, `7/8`, `mixed (3+2+2)`. Empty if unknown or only inferred by ear. |
+| `chord_progression` | Short typical loop for a named version, e.g. `Am–G–F–E` or `i–VII–VI–V`. Not a full chart. Empty rather than copy fan tabs. |
 | `piano_version_exists` | `Yes` (an original or published piano version is documented), `No` (a source states that none exists), or `Unknown` (default). |
 | `piano_arrangement_potential` | Always `Not assessed`. The educator fills this in later. |
 | `source_url` | The most reliable source actually consulted. Required. |
